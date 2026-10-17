@@ -20,7 +20,7 @@ import org.junit.Test
 class PhotoRepositoryTest {
 
     @Test
-    fun getPhotos_returnsMappedPhotos() = runBlocking {
+    fun `getPhotos는 Photo로 변환하여 반환한다`() = runBlocking {
         val engine = MockEngine { request ->
             respond(
                 content = """
@@ -83,7 +83,7 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_throwsException_whenPageIsInvalid() {
+    fun `getPhotos는 page가 0인 경우 예외를 반환한다`() {
         val client = createUnsplashClient(
             accessKey = TEST_ACCESS_KEY,
             engine = MockEngine {
@@ -103,7 +103,7 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_throwsException_whenPerPageIsInvalid() {
+    fun `getPhotos는 perPage가 invalid인 경우 예외를 반환한다`() {
         val client = createUnsplashClient(
             accessKey = TEST_ACCESS_KEY,
             engine = MockEngine {
@@ -125,7 +125,7 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_mapsMalformedJsonToUnexpected() {
+    fun `getPhotos는 MalformedJson인 경우 Unexpected 예외를 반환한다`() {
         val exception = assertRepositoryError<PhotoLoadException.Unexpected>(
             status = HttpStatusCode.OK,
             content = "invalid-json",
@@ -135,21 +135,21 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_maps401ToUnauthorized() {
+    fun `getPhotos는 401응답에 Unauthorized 예외를 반환한다`() {
         val exception = assertRepositoryError<PhotoLoadException.Unauthorized>(HttpStatusCode.Unauthorized)
 
         assertNotNull(exception.cause)
     }
 
     @Test
-    fun getPhotos_maps429ToRateLimited() {
+    fun `getPhotos는 429응답에 RateLimited 예외를 반환한다`() {
         val exception = assertRepositoryError<PhotoLoadException.RateLimited>(HttpStatusCode.TooManyRequests)
 
         assertNotNull(exception.cause)
     }
 
     @Test
-    fun getPhotos_maps500ToHttpError() {
+    fun `getPhotos는 500응답에 HttpError 예외를 반환한다`() {
         val exception = assertRepositoryError<PhotoLoadException.HttpError>(HttpStatusCode.InternalServerError)
 
         assertEquals(500, exception.statusCode)
@@ -157,7 +157,7 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_mapsIOExceptionToNetwork() {
+    fun `getPhotos는 IOException을 Network 예외로 변환하여 반환한다`() {
         val engine = MockEngine {
             throw IOException("Simulated network failure")
         }
@@ -179,7 +179,7 @@ class PhotoRepositoryTest {
     }
 
     @Test
-    fun getPhotos_propagatesCancellationException() {
+    fun `getPhotos는 CancellationException을 전파한다`() {
         val engine = MockEngine {
             throw CancellationException(
                 "Simulated cancellation"

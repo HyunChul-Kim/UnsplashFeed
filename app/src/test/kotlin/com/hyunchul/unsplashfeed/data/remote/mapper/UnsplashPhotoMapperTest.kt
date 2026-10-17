@@ -12,7 +12,7 @@ import org.junit.Test
 class UnsplashPhotoMapperTest {
 
     @Test
-    fun toPhoto_mapsDtoToPhoto() {
+    fun `toPhoto 함수는 UnsplashPhotoDto를 Photo로 변환한다`() {
         val dto = UnsplashPhotoDto(
             id = "photo-1",
             description = null,

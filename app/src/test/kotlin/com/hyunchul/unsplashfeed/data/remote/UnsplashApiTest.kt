@@ -14,7 +14,7 @@ import org.junit.Test
 class UnsplashApiTest {
 
     @Test
-    fun getPhotos_returnsPhotos() = runBlocking {
+    fun `getPhotos는 Photo를 반환한다`() = runBlocking {
         val mockEngine = MockEngine { request ->
             assertEquals("api.unsplash.com", request.url.host)
             assertEquals("/photos", request.url.encodedPath)
@@ -70,19 +70,19 @@ class UnsplashApiTest {
         )
 
         client.use { client ->
-            val photos = UnsplashApi(client).getPhotos(
+            val result = UnsplashApi(client).getPhotos(
                 page = 1,
                 perPage = 3,
             )
 
-            assertEquals(1, photos.size)
-            assertEquals("photo-1", photos.first().id)
-            assertEquals("Test User", photos.first().user.name)
+            assertEquals(1, result.photos.size)
+            assertEquals("photo-1", result.photos.first().id)
+            assertEquals("Test User", result.photos.first().user.name)
         }
     }
 
     @Test
-    fun getPhotos_throwsClientRequestException_on401() {
+    fun `getPhotos에서 401이 반환되면 ClientRequestException이 발생한다`() {
         val mockEngine = MockEngine {
             respond(
                 content = """

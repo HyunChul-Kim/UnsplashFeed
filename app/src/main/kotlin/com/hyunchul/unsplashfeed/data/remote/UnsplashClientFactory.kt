@@ -23,6 +23,10 @@ fun createUnsplashClient(
         defaultRequest {
             url("https://api.unsplash.com/")
             header(
+                "Accept-Version",
+                "v1"
+            )
+            header(
                 HttpHeaders.Authorization,
                 "Client-ID $accessKey",
             )
