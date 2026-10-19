@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.dagger.hilt)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 val localProperties = Properties().apply {
@@ -20,6 +21,10 @@ val unsplashAccessKey = localProperties.getProperty("UNSPLASH_ACCESS_KEY")
     ?: throw GradleException(
         "UNSPLASH_ACCESS_KEY is missing in local.properties"
     )
+
+room {
+    schemaDirectory("$projectDir/schemas")
+}
 
 android {
     namespace = "com.hyunchul.unsplashfeed"
@@ -71,9 +76,12 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
+    implementation(libs.androidx.work.runtime.ktx)
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
@@ -86,7 +94,12 @@ dependencies {
 
     implementation(libs.dagger.hilt.android)
     ksp(libs.dagger.hilt.compiler)
+    implementation(libs.androidx.hilt.work)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
+
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.ktor.client.mock)

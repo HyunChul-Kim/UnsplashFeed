@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.hyunchul.unsplashfeed.feature.feed.FeedRoute
+import com.hyunchul.unsplashfeed.navigation.UnsplashNavHost
 import com.hyunchul.unsplashfeed.ui.theme.UnsplashFeedTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -22,7 +23,9 @@ class MainActivity: ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             UnsplashFeedTheme {
-                FeedRoute()
+                UnsplashNavHost(
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
