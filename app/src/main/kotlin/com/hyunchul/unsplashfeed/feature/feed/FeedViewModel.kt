@@ -68,18 +68,4 @@ class FeedViewModel @Inject constructor(
         }
     }
 
-    fun retryDownload(
-        photoId: String,
-        requestId: String,
-    ) {
-        viewModelScope.launch {
-            try {
-                favoriteRepository.retryDownload(photoId, requestId)
-            } catch(e: CancellationException) {
-                throw e
-            } catch(e: Exception) {
-                messageChannel.send("사진 저장 요청에 실패했습니다.")
-            }
-        }
-    }
 }

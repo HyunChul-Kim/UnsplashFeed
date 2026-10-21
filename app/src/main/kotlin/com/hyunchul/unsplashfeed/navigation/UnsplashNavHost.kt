@@ -2,19 +2,19 @@ package com.hyunchul.unsplashfeed.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.hyunchul.unsplashfeed.feature.detail.PhotoDetailDestination
+import com.hyunchul.unsplashfeed.feature.detail.PhotoDetailRoute
+import com.hyunchul.unsplashfeed.feature.favorites.FavoritesDestination
 import com.hyunchul.unsplashfeed.feature.favorites.FavoritesRoute
+import com.hyunchul.unsplashfeed.feature.feed.FeedDestination
 import com.hyunchul.unsplashfeed.feature.feed.FeedRoute
 import kotlinx.serialization.Serializable
-
-@Serializable
-data object FeedDestination
-
-@Serializable
-data object FavoritesDestination
 
 @Composable
 fun UnsplashNavHost(
@@ -29,8 +29,15 @@ fun UnsplashNavHost(
         composable<FeedDestination> {entry ->
             FeedRoute(
                 onOpenFavorites = {
-                    if(navController.currentBackStackEntry == entry) {
-                        navController.navigate(FavoritesDestination) {
+                    navController.runIfCurrent(entry) {
+                        navigate(FavoritesDestination) {
+                            launchSingleTop = true
+                        }
+                    }
+                },
+                onPhotoClick = { photoId ->
+                    navController.runIfCurrent(entry) {
+                        navigate(PhotoDetailDestination(photoId)) {
                             launchSingleTop = true
                         }
                     }
@@ -41,11 +48,30 @@ fun UnsplashNavHost(
         composable<FavoritesDestination> { entry ->
             FavoritesRoute(
                 onBack = {
-                    if(navController.currentBackStackEntry == entry) {
-                        navController.popBackStack()
+                    navController.runIfCurrent(entry) {
+                        popBackStack()
                     }
                 }
             )
         }
+
+        composable<PhotoDetailDestination> { entry ->
+            PhotoDetailRoute(
+                onBack = {
+                    navController.runIfCurrent(entry) {
+                        popBackStack()
+                    }
+                }
+            )
+        }
+    }
+}
+
+private fun NavController.runIfCurrent(
+    sourceEntry: NavBackStackEntry,
+    action: NavController.() -> Unit,
+) {
+    if(currentBackStackEntry == sourceEntry) {
+        action()
     }
 }

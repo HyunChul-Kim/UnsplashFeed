@@ -14,6 +14,7 @@ object FeedFixtures {
         thumbnailUrl = "https://example.com/$id/small",
         regularUrl = "https://example.com/$id/regular",
         fullUrl = "https://example.com/$id/full",
+        rawUrl = "https://example.com/$id/raw",
         photographerName = "Test User",
         photographerProfileUrl = "https://example.com/user",
         downloadLocation = "https://example.com/$id/download",

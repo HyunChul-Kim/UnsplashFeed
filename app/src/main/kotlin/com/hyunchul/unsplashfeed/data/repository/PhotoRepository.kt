@@ -21,6 +21,15 @@ class PhotoRepository @Inject constructor(
     private val api: UnsplashApi,
 ) {
 
+    suspend fun getPhoto(
+        photoId: String,
+    ): Photo {
+        require(photoId.isNotBlank())
+        return withPhotoLoadErrors {
+            api.getPhoto(photoId).toPhoto()
+        }
+    }
+
     suspend fun getPhotos(
         page: Int = 1,
         perPage: Int = 20,
@@ -35,7 +44,7 @@ class PhotoRepository @Inject constructor(
         require(page > 0)
         require(perPage in 1..30)
 
-        return try {
+        return withPhotoLoadErrors {
             val response = api.getPhotos(
                 page = page,
                 perPage = perPage,
@@ -45,23 +54,6 @@ class PhotoRepository @Inject constructor(
                 photos = response.photos.map { it.toPhoto() },
                 hasNextPage = response.hasNextPage,
             )
-        } catch(e: CancellationException) {
-            throw e
-        } catch(e: ResponseException) {
-            throw when(e.response.status) {
-                HttpStatusCode.Unauthorized -> PhotoLoadException.Unauthorized(e)
-                HttpStatusCode.TooManyRequests -> PhotoLoadException.RateLimited(e)
-                else -> {
-                    PhotoLoadException.HttpError(
-                        statusCode = e.response.status.value,
-                        cause = e,
-                    )
-                }
-            }
-        } catch(e: IOException) {
-            throw PhotoLoadException.Network(e)
-        } catch(e: Exception) {
-            throw PhotoLoadException.Unexpected(e)
         }
     }
 
@@ -81,5 +73,30 @@ class PhotoRepository @Inject constructor(
                 )
             },
         ).flow
+    }
+
+    private suspend fun <T> withPhotoLoadErrors(
+        block: suspend () -> T,
+    ): T {
+        return try {
+            block()
+        } catch(e: CancellationException) {
+            throw e
+        } catch(e: ResponseException) {
+            throw when(e.response.status) {
+                HttpStatusCode.Unauthorized -> PhotoLoadException.Unauthorized(e)
+                HttpStatusCode.TooManyRequests -> PhotoLoadException.RateLimited(e)
+                else -> {
+                    PhotoLoadException.HttpError(
+                        statusCode = e.response.status.value,
+                        cause = e,
+                    )
+                }
+            }
+        } catch(e: IOException) {
+            throw PhotoLoadException.Network(e)
+        } catch(e: Exception) {
+            throw PhotoLoadException.Unexpected(e)
+        }
     }
 }

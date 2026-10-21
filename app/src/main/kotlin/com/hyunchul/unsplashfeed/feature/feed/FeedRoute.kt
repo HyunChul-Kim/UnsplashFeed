@@ -12,6 +12,7 @@ import androidx.paging.compose.collectAsLazyPagingItems
 @Composable
 fun FeedRoute(
     onOpenFavorites: () -> Unit,
+    onPhotoClick: (String) -> Unit,
     viewModel: FeedViewModel = hiltViewModel(),
 ) {
     val photos = viewModel.photos.collectAsLazyPagingItems()
@@ -28,8 +29,8 @@ fun FeedRoute(
         photos = photos,
         favoriteState = favoriteState,
         onFavoriteClick = viewModel::toggleFavorite,
-        onRetryDownload = viewModel::retryDownload,
         snackbarHostState = snackbarHostState,
         onOpenFavorites = onOpenFavorites,
+        onPhotoClick = onPhotoClick,
     )
 }

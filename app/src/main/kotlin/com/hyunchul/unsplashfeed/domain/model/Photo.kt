@@ -9,6 +9,7 @@ data class Photo(
     val thumbnailUrl: String,
     val regularUrl: String,
     val fullUrl: String,
+    val rawUrl: String,
     val photographerName: String,
     val photographerProfileUrl: String,
     val downloadLocation: String,

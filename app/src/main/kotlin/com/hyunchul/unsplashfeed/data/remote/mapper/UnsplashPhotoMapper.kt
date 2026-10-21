@@ -13,6 +13,7 @@ fun UnsplashPhotoDto.toPhoto(): Photo {
         thumbnailUrl = urls.small,
         regularUrl = urls.regular,
         fullUrl = urls.full,
+        rawUrl = urls.raw,
         photographerName = user.name,
         photographerProfileUrl = user.profileImage.small,
         downloadLocation = links.downloadLocation,

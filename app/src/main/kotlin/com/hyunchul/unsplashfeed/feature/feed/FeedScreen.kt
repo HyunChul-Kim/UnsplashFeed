@@ -1,6 +1,7 @@
 package com.hyunchul.unsplashfeed.feature.feed
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,9 +62,9 @@ fun FeedScreen(
     photos: LazyPagingItems<FeedPhotoItem>,
     favoriteState: FeedFavoriteUiState,
     onFavoriteClick: (Photo) -> Unit,
-    onRetryDownload: (photoId: String, requestId: String) -> Unit,
     snackbarHostState: SnackbarHostState,
     onOpenFavorites: () -> Unit,
+    onPhotoClick: (String) -> Unit,
 ) {
     val refreshState = photos.loadState.refresh
     val appendState = photos.loadState.append
@@ -165,14 +166,7 @@ fun FeedScreen(
                                 favorite = favorite,
                                 favoriteActionsEnabled = favoriteState.loaded,
                                 onFavoriteClick = { onFavoriteClick(entry.photo) },
-                                onRetryDownload = {
-                                    favorite?.let {
-                                        onRetryDownload(
-                                            entry.photo.id,
-                                            it.requestId,
-                                        )
-                                    }
-                                }
+                                onPhotoClick = { onPhotoClick(entry.photo.id) },
                             )
                         }
                     }
@@ -219,14 +213,18 @@ private fun PhotoCard(
     favorite: FeedFavoriteItem?,
     favoriteActionsEnabled: Boolean,
     onFavoriteClick: () -> Unit,
-    onRetryDownload: () -> Unit,
+    onPhotoClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
     ) {
-        Column {
+        Column(
+            modifier = Modifier.clickable(
+                onClick = onPhotoClick,
+            )
+        ) {
             AsyncImage(
                 model = photo.thumbnailUrl,
                 contentDescription = photo.altDescription
@@ -292,26 +290,6 @@ private fun PhotoCard(
                     onClick = onFavoriteClick,
                 )
             }
-
-            /*val isRetryable = favorite?.fileState == PhotoFileState.FAILED
-            CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
-                TextButton(
-                    onClick = onRetryDownload,
-                    enabled = isRetryable && favoriteActionsEnabled,
-                    modifier = Modifier.height(16.dp),
-                    contentPadding = PaddingValues(0.dp),
-                ) {
-                    Text(
-                        text = if(isRetryable) {
-                            "저장 다시 시도"
-                        } else {
-                            "테스트"
-                        },
-                        textAlign = TextAlign.Start,
-                        fontSize = 10.sp,
-                    )
-                }
-            }*/
         }
     }
 }

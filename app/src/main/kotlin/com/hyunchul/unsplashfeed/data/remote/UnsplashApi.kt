@@ -6,11 +6,22 @@ import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.http.HttpHeaders
+import io.ktor.http.appendPathSegments
 import javax.inject.Inject
 
 class UnsplashApi @Inject constructor(
     private val client: HttpClient,
 ) {
+
+    suspend fun getPhoto(
+        photoId: String,
+    ): UnsplashPhotoDto {
+        return client.get("photos") {
+            url {
+                appendPathSegments(photoId, encodeSlash = true)
+            }
+        }.body()
+    }
 
     suspend fun getPhotos(
         page: Int = 1,
